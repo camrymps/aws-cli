@@ -2,11 +2,12 @@ import boto3
 import click
 from param_types.dict_param_type import DICT
 from config.s3 import config
+from lib.utils import remove_empty_args, recurse_directory
+
 
 @click.group()
 def s3():
     pass
-
 
 @s3.command()
 @click.argument("path", type=click.Path(exists=True))
@@ -107,9 +108,8 @@ def cp(**kwargs):
         bucket = destination[destination.index("s3://") + 5 :].split("/")[0]
 
     # Assemble the arguments for the S3 client's 'copy_object' method
-    args = {
-        k: v
-        for k, v in {
+    args = remove_empty_args(
+        {
             "Bucket": bucket,
             "CopySource": kwargs.get("source"),
             "Key": kwargs.get("key"),
@@ -130,16 +130,22 @@ def cp(**kwargs):
             "RequestPayer": kwargs.get("request_payer"),
             "Metadata": kwargs.get("metadata"),
             "MetadataDirective": kwargs.get("metadata_directive"),
-        }.items()
-        if v != None
-    }
+        }
+    )
 
     print(args)
 
-    s3_client = boto3.client("s3", config=config(
-        ca_bundle=kwargs.get("ca_bundle"),
-        connect_timeout=kwargs.get("connect_timeout"),
-        read_timeout=kwargs.get("read-timeout")
-    ))
+    s3_client = boto3.client(
+        "s3",
+        config=config(
+            proxies_config={
+                "proxy_ca_bundle": kwargs.get("ca_bundle")
+            },
+            connect_timeout=kwargs.get("connect_timeout"),
+            read_timeout=kwargs.get("read-timeout"),
+        ),
+    )
 
-    # s3_client.copy_object(**args)
+    print(recurse_directory("C:\\Users\\Michael Scott\\OneDrive\\Documents\\Projects\\galactica-aws-cli"))
+
+    #s3_client.copy_object(**args)

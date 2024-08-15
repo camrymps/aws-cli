@@ -9,15 +9,13 @@ Learn more here config_.
 """
 def config(**kwargs) -> Config:
     return Config(
-        """
-        Default configuration options go here.
-
-        Ex: 
-        region_name="us-east-1",
-        client_cert="/tls/cert.crt",
-        use_fips_endpoint=True,
-        ...
-        """
+        # Default configuration options go here.
+        #
+        # Ex: 
+        # region_name="us-east-1",
+        # client_cert="/tls/cert.crt",
+        # use_fips_endpoint=True,
+        # ...
 
         # '**kwargs' must be LAST
         **kwargs
